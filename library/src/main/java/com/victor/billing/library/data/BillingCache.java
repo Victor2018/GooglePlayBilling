@@ -1,0 +1,147 @@
+package com.victor.billing.library.data;
+
+import android.content.Context;
+import android.text.TextUtils;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Pattern;
+
+/*
+ * -----------------------------------------------------------------
+ * Copyright (C) 2018-2028, by Victor, All rights reserved.
+ * -----------------------------------------------------------------
+ * File: BillingCache.java
+ * Author: Victor
+ * Date: 2018/8/27 13:43
+ * Description:
+ * -----------------------------------------------------------------
+ */
+public class BillingCache extends BillingBase {
+    private static final String ENTRY_DELIMITER = "#####";
+    private static final String LINE_DELIMITER = ">>>>>";
+    private static final String VERSION_KEY = ".version";
+
+    private HashMap<String, PurchaseInfo> data;
+    private String cacheKey;
+    private String version;
+
+    BillingCache(Context context, String key)
+    {
+        super(context);
+        data = new HashMap<>();
+        cacheKey = key;
+        load();
+    }
+
+    private String getPreferencesCacheKey()
+    {
+        return getPreferencesBaseKey() + cacheKey;
+    }
+
+    private String getPreferencesVersionKey()
+    {
+        return getPreferencesCacheKey() + VERSION_KEY;
+    }
+
+    private void load()
+    {
+        String[] entries = loadString(getPreferencesCacheKey(), "").split(Pattern.quote(ENTRY_DELIMITER));
+        for (String entry : entries)
+        {
+            if (!TextUtils.isEmpty(entry))
+            {
+                String[] parts = entry.split(Pattern.quote(LINE_DELIMITER));
+                if (parts.length > 2)
+                {
+                    data.put(parts[0], new PurchaseInfo(parts[1], parts[2]));
+                }
+                else if (parts.length > 1)
+                {
+                    data.put(parts[0], new PurchaseInfo(parts[1], null));
+                }
+            }
+        }
+        version = getCurrentVersion();
+    }
+
+    private void flush()
+    {
+        ArrayList<String> output = new ArrayList<>();
+        for (String productId : data.keySet())
+        {
+            PurchaseInfo info = data.get(productId);
+            output.add(productId + LINE_DELIMITER + info.responseData + LINE_DELIMITER +
+                    info.signature);
+        }
+        saveString(getPreferencesCacheKey(), TextUtils.join(ENTRY_DELIMITER, output));
+        version = Long.toString(new Date().getTime());
+        saveString(getPreferencesVersionKey(), version);
+    }
+
+    boolean includesProduct(String productId)
+    {
+        reloadDataIfNeeded();
+        return data.containsKey(productId);
+    }
+
+    PurchaseInfo getDetails(String productId)
+    {
+        reloadDataIfNeeded();
+        return data.containsKey(productId) ? data.get(productId) : null;
+    }
+
+    void put(String productId, String details, String signature)
+    {
+        reloadDataIfNeeded();
+        if (!data.containsKey(productId))
+        {
+            data.put(productId, new PurchaseInfo(details, signature));
+            flush();
+        }
+    }
+
+    void remove(String productId)
+    {
+        reloadDataIfNeeded();
+        if (data.containsKey(productId))
+        {
+            data.remove(productId);
+            flush();
+        }
+    }
+
+    void clear()
+    {
+        reloadDataIfNeeded();
+        data.clear();
+        flush();
+    }
+
+    private String getCurrentVersion()
+    {
+        return loadString(getPreferencesVersionKey(), "0");
+    }
+
+    private void reloadDataIfNeeded()
+    {
+        if (!version.equalsIgnoreCase(getCurrentVersion()))
+        {
+            data.clear();
+            load();
+        }
+    }
+
+    List<String> getContents()
+    {
+        return new ArrayList<>(data.keySet());
+    }
+
+    @Override
+    public String toString()
+    {
+        return TextUtils.join(", ", data.keySet());
+    }
+}
