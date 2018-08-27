@@ -18,6 +18,18 @@ dependencies {
         compile 'com.github.Victor2018:GooglePlayBilling:v1.0'
 }
 
+- Step 3. Add billingling permission in AndroidManifest.xml
+- <!--google com.android.vending.billingling permission-->
+- <uses-permission android:name="com.android.vending.BILLING" />
+
+- Step 4. Add google pay lib in build.gradle of app and sync project
+ ///////google pay com.android.vending.billing start//////
+ implementation 'com.google.android.gms:play-services-fitness:11.0.2'
+ implementation 'com.google.android.gms:play-services-wearable:11.0.2'
+ ///////google pay com.android.vending.billing end//////
+
+
+
 
 # 关注开发者：
 - 邮箱： victor423099@gmail.com
