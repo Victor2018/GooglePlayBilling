@@ -10,6 +10,7 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.victor.billing.library.data.BillingProcessor;
+import com.victor.billing.library.data.SkuDetails;
 import com.victor.billing.library.data.TransactionDetails;
 import com.victor.billing.library.util.Loger;
 
@@ -25,6 +26,9 @@ public class GoogleInBillingHelper implements BillingProcessor.IBillingHandler{
     private String TAG = "GoogleInBillingHelper";
     public static final int PURCHASE      = 0x001;
     private static final int CONSUME      = 0x002;
+    public static final int SUBSCRIBE    = 0x003;
+    public static final int PRODUCT_DETAILS    = 0x004;
+    public static final int SUBSCRIBE_DETAILS    = 0x005;
     private String base64EncodedPublicKey;
     private String merchantId ;
     private Activity mActivity;
@@ -66,12 +70,24 @@ public class GoogleInBillingHelper implements BillingProcessor.IBillingHandler{
                 HashMap<Integer,Object> purchaseMap = (HashMap<Integer, Object>) msg.obj;
                 switch (msg.what) {
                     case PURCHASE://购买商品
-                        String id = (String) purchaseMap.get(PURCHASE);
-                        buyPurchase(id);
+                        String purchaseId = (String) purchaseMap.get(PURCHASE);
+                        buyPurchase(purchaseId);
                         break;
                     case CONSUME://消耗商品
                         TransactionDetails details = (TransactionDetails) purchaseMap.get(CONSUME);
                         consumePurchase(details);
+                        break;
+                    case PRODUCT_DETAILS://购买商品详情
+                        String purchaseDetailId = (String) purchaseMap.get(PRODUCT_DETAILS);
+                        productDetails(purchaseDetailId);
+                        break;
+                    case SUBSCRIBE://商品订阅
+                        String subscribePurchaseId = (String) purchaseMap.get(SUBSCRIBE);
+                        subscribe(subscribePurchaseId);
+                        break;
+                    case SUBSCRIBE_DETAILS://商品订阅详情
+                        String subscribeDetailId = (String) purchaseMap.get(SUBSCRIBE_DETAILS);
+                        subscribeDetails(subscribeDetailId);
                         break;
                 }
             }
@@ -116,6 +132,66 @@ public class GoogleInBillingHelper implements BillingProcessor.IBillingHandler{
         if (billingProcessor != null) {
             this.purchaseId = purchaseId;
             billingProcessor.purchase(mActivity,purchaseId);
+        }
+    }
+
+    /**
+     * 获取购买商品详情
+     * @param purchaseId
+     */
+    private void productDetails(String purchaseId) {
+        Loger.d(TAG, "productDetails()......purchaseId = " + purchaseId);
+        if(!isGpAvailable) {
+            if (mOnGoogleInBillingListener != null) {
+                mOnGoogleInBillingListener.onBillingFailed("In-app billing service is unavailable, please upgrade Android Market/Play to version >= 3.9.16");
+                return;
+            }
+        }
+        if (billingProcessor != null) {
+            this.purchaseId = purchaseId;
+            SkuDetails skuDetails = billingProcessor.getPurchaseListingDetails(purchaseId);
+            if (mOnGoogleInBillingListener != null) {
+                mOnGoogleInBillingListener.onProductDetails(skuDetails);
+            }
+        }
+    }
+
+    /**
+     * 获取订阅商品详情
+     * @param subscribeId
+     */
+    private void subscribeDetails(String subscribeId) {
+        Loger.d(TAG, "subscribeDetails()......subscribeId = " + purchaseId);
+        if(!isGpAvailable) {
+            if (mOnGoogleInBillingListener != null) {
+                mOnGoogleInBillingListener.onBillingFailed("In-app billing service is unavailable, please upgrade Android Market/Play to version >= 3.9.16");
+                return;
+            }
+        }
+        if (billingProcessor != null) {
+            this.purchaseId = subscribeId;
+            SkuDetails skuDetails = billingProcessor.getSubscriptionListingDetails(purchaseId);
+            if (mOnGoogleInBillingListener != null) {
+                mOnGoogleInBillingListener.onProductDetails(skuDetails);
+            }
+        }
+    }
+
+    /**
+     * 商品订阅
+     * @param subscribeId
+     */
+    private void subscribe(String subscribeId) {
+        Loger.d(TAG, "buyPurchase()......purchaseId = " + purchaseId);
+        if(!isGpAvailable) {
+            if (mOnGoogleInBillingListener != null) {
+                mOnGoogleInBillingListener.onBillingFailed("In-app billing service is unavailable, please upgrade Android Market/Play to version >= 3.9.16");
+                return;
+            }
+        }
+        if (billingProcessor != null) {
+            this.purchaseId = subscribeId;
+            billingProcessor.subscribe(mActivity,purchaseId);
         }
     }
 
@@ -212,6 +288,7 @@ public class GoogleInBillingHelper implements BillingProcessor.IBillingHandler{
     public interface OnGoogleInBillingListener {
         void onBillingComplete(TransactionDetails details);
         void onBillingFailed (String error);
+        void onProductDetails (SkuDetails skuDetails);
     }
 
 }
