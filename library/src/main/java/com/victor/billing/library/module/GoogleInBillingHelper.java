@@ -119,6 +119,7 @@ public class GoogleInBillingHelper implements BillingProcessor.IBillingHandler{
 
     /**
      * 购买商品
+     * 先检查是否已购买该商品没有消耗则先消耗商品再购买否则购买失败
      * @param purchaseId
      */
     private void buyPurchase(String purchaseId) {
@@ -131,6 +132,10 @@ public class GoogleInBillingHelper implements BillingProcessor.IBillingHandler{
         }
         if (billingProcessor != null) {
             this.purchaseId = purchaseId;
+            SkuDetails skuDetails = billingProcessor.getPurchaseListingDetails(purchaseId);
+            if (skuDetails != null) {
+                billingProcessor.consumePurchase(purchaseId);
+            }
             billingProcessor.purchase(mActivity,purchaseId);
         }
     }
