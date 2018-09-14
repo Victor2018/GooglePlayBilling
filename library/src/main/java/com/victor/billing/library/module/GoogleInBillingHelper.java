@@ -187,7 +187,7 @@ public class GoogleInBillingHelper implements BillingProcessor.IBillingHandler{
      * @param subscribeId
      */
     private void subscribe(String subscribeId) {
-        Loger.d(TAG, "buyPurchase()......purchaseId = " + purchaseId);
+        Loger.d(TAG, "subscribe()......subscribeId = " + subscribeId);
         if(!isGpAvailable) {
             if (mOnGoogleInBillingListener != null) {
                 mOnGoogleInBillingListener.onBillingFailed("In-app billing service is unavailable, please upgrade Android Market/Play to version >= 3.9.16");
