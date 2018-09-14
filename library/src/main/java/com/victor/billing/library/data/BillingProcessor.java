@@ -575,6 +575,8 @@ public class BillingProcessor extends BillingBase {
         if (developerMerchantId == null) {//omit merchant id checking
             return true;
         }
+        if (details == null)  return true;
+        if (details.purchaseTime == null) return true;
         if (details.purchaseTime.before(DATE_MERCHANT_LIMIT_1)) {//new format [merchantId].[orderId] applied or not?
             return true;
         }
