@@ -29,6 +29,7 @@ public class GoogleInBillingHelper implements BillingProcessor.IBillingHandler{
     public static final int SUBSCRIBE    = 0x003;
     public static final int PRODUCT_DETAILS    = 0x004;
     public static final int SUBSCRIBE_DETAILS    = 0x005;
+    private int billingMode = PURCHASE;
     private String base64EncodedPublicKey;
     private String merchantId ;
     private Activity mActivity;
@@ -123,6 +124,7 @@ public class GoogleInBillingHelper implements BillingProcessor.IBillingHandler{
      * @param purchaseId
      */
     private void buyPurchase(String purchaseId) {
+        billingMode = PURCHASE;
         Loger.d(TAG, "buyPurchase()......purchaseId = " + purchaseId);
         if(!isGpAvailable) {
             if (mOnGoogleInBillingListener != null) {
@@ -187,6 +189,7 @@ public class GoogleInBillingHelper implements BillingProcessor.IBillingHandler{
      * @param subscribeId
      */
     private void subscribe(String subscribeId) {
+        billingMode = SUBSCRIBE;
         Loger.d(TAG, "subscribe()......subscribeId = " + subscribeId);
         if(!isGpAvailable) {
             if (mOnGoogleInBillingListener != null) {
@@ -223,7 +226,14 @@ public class GoogleInBillingHelper implements BillingProcessor.IBillingHandler{
     @Override
     public void onProductPurchased(String productId, TransactionDetails details) {
         Loger.d(TAG, "onProductPurchased()......");
-        sendRequestWithParms(CONSUME,details);
+        //如果是购买商品则消耗商品
+        if (billingMode == PURCHASE) {
+            sendRequestWithParms(CONSUME,details);
+        } else if (billingMode == SUBSCRIBE) {//如果是订阅商品则返回订阅交易数据
+            if (mOnGoogleInBillingListener != null) {
+                mOnGoogleInBillingListener.onBillingComplete(details);
+            }
+        }
     }
 
     @Override
