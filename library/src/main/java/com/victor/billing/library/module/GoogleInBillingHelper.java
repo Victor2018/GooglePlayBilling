@@ -225,11 +225,15 @@ public class GoogleInBillingHelper implements BillingProcessor.IBillingHandler{
 
     @Override
     public void onProductPurchased(String productId, TransactionDetails details) {
-        Loger.d(TAG, "onProductPurchased()......");
+        Loger.d(TAG, "onProductPurchased()......productId = " + productId);
+        Loger.d(TAG, "onProductPurchased()......details = " + details);
         //如果是购买商品则消耗商品
         if (billingMode == PURCHASE) {
+            Loger.d(TAG, "onProductPurchased()......billingMode == PURCHASE");
             sendRequestWithParms(CONSUME,details);
         } else if (billingMode == SUBSCRIBE) {//如果是订阅商品则返回订阅交易数据
+            Loger.d(TAG, "onProductPurchased()......billingMode == SUBSCRIBE");
+            Loger.d(TAG, "onProductPurchased()......mOnGoogleInBillingListener == mOnGoogleInBillingListener");
             if (mOnGoogleInBillingListener != null) {
                 mOnGoogleInBillingListener.onBillingComplete(details);
             }
