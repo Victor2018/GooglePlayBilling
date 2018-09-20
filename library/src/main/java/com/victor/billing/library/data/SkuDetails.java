@@ -168,13 +168,11 @@ public class SkuDetails implements Parcelable{
 
     public static final Parcelable.Creator<SkuDetails> CREATOR =
         new Parcelable.Creator<SkuDetails>() {
-            public SkuDetails createFromParcel(Parcel source)
-            {
+            public SkuDetails createFromParcel(Parcel source) {
                 return new SkuDetails(source);
             }
 
-            public SkuDetails[] newArray(int size)
-            {
+            public SkuDetails[] newArray(int size) {
                 return new SkuDetails[size];
             }
         };

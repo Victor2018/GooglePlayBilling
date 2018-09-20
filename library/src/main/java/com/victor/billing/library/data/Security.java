@@ -105,11 +105,9 @@ public class Security {
                 return false;
             }
             return true;
-        }
-        catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             Log.e(TAG, "NoSuchAlgorithmException.");
-        }
-        catch (InvalidKeyException e) {
+        } catch (InvalidKeyException e) {
             Log.e(TAG, "Invalid key specification.");
         } catch (SignatureException e) {
             Log.e(TAG, "Signature exception.");

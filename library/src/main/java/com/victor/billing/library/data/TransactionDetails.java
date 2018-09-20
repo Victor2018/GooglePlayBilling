@@ -45,7 +45,7 @@ public class TransactionDetails implements Parcelable {
 
     public final PurchaseInfo purchaseInfo;
 
-    public TransactionDetails(PurchaseInfo info) throws JSONException {
+    public TransactionDetails(PurchaseInfo info) {
         purchaseInfo = info;
         productId = purchaseInfo.purchaseData.productId;
         orderId = purchaseInfo.purchaseData.orderId;

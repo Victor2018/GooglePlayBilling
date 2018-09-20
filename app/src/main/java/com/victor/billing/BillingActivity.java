@@ -79,11 +79,13 @@ public class BillingActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onBillingComplete(TransactionDetails details) {
         Loger.d(TAG,"onBillingComplete-buy success" + details.orderId);
+        Toast.makeText(this,"onBillingComplete-buy success" + details.orderId,Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onBillingFailed(String error) {
         Loger.e(TAG,"onBillingFailed-error = " + error);
+        Toast.makeText(this,"onBillingFailed-error = " + error,Toast.LENGTH_SHORT).show();
     }
 
     @Override

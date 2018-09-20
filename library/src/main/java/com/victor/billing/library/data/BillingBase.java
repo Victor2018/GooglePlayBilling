@@ -17,18 +17,15 @@ import android.preference.PreferenceManager;
 public class BillingBase {
     private Context context;
 
-    BillingBase(Context context)
-    {
+    BillingBase(Context context) {
         this.context = context;
     }
 
-    Context getContext()
-    {
+    Context getContext() {
         return context;
     }
 
-    String getPreferencesBaseKey()
-    {
+    String getPreferencesBaseKey() {
         return getContext().getPackageName() + "_preferences";
     }
 

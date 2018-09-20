@@ -16,7 +16,6 @@ import java.util.Date;
  * -----------------------------------------------------------------
  */
 public class PurchaseData implements Parcelable {
-
     public String orderId;
     public String packageName;
     public String productId;
@@ -27,8 +26,7 @@ public class PurchaseData implements Parcelable {
     public boolean autoRenewing;
 
     @Override
-    public int describeContents()
-    {
+    public int describeContents() {
         return 0;
     }
 
@@ -66,7 +64,6 @@ public class PurchaseData implements Parcelable {
             public PurchaseData createFromParcel(Parcel source) {
                 return new PurchaseData(source);
             }
-
             public PurchaseData[] newArray(int size)
             {
                 return new PurchaseData[size];
