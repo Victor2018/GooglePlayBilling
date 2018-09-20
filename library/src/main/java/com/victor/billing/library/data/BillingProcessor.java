@@ -613,8 +613,11 @@ public class BillingProcessor extends BillingBase {
         if (developerMerchantId == null) {//omit merchant id checking
             return true;
         }
-        if (details.purchaseInfo.purchaseData.purchaseTime.before(DATE_MERCHANT_LIMIT_1)) //newest format applied
-        {
+        if (details == null) return true;
+        if (details.purchaseInfo == null) return true;
+        if (details.purchaseInfo.purchaseData == null) return true;
+        if (details.purchaseInfo.purchaseData.purchaseTime == null) return true;
+        if (details.purchaseInfo.purchaseData.purchaseTime.before(DATE_MERCHANT_LIMIT_1)) { //newest format applied
             return true;
         }
         if (details.purchaseInfo.purchaseData.purchaseTime.after(DATE_MERCHANT_LIMIT_2)) {//newest format applied
